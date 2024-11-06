@@ -12,64 +12,102 @@ Write a function to check if a user is logged
 */
 
 function authStateListener() {
-    // [START auth_state_listener]
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            // User is signed in, see docs for a list of available properties
-            // https://firebase.google.com/docs/reference/js/v8/firebase.User
-            var uid = user.uid;
-            // ...
-            location.href = 'listproject.html';
-        } else {
-            // User is signed out
-            // ...
-
-        }
-    });
-    // [END auth_state_listener]
+  // [START auth_state_listener]
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/v8/firebase.User
+      var uid = user.uid;
+      // ...
+      location.href = "listproject.html";
+    } else {
+      // User is signed out
+      // ...
+    }
+  });
+  // [END auth_state_listener]
 }
 
-window.addEventListener('load', function () {
+window.addEventListener("load", function () {
+  authStateListener();
 
 
-    //Listen for auth state changes
-    authStateListener();
+firebase.auth().useDeviceLanguage();
 
-    document.getElementById('sign-in-button').addEventListener('click', function () {
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      "recaptcha"
+    );
+  }
 
-        let provider = new firebase.auth.GoogleAuthProvider();
 
-        provider.addScope('email');
-        firebase.auth().signInWithPopup(provider)
-            .then(function (result) {
-                console.log('Logging sucessfully', result.user);
-                location.href = 'home.html';
-            })
-            .catch(function (error) {
-                console.log('Logging fail', error);
-            });
+
+  document
+    .getElementById("sign-in-button")
+    .addEventListener("click", function () {
+      let provider = new firebase.auth.GoogleAuthProvider();
+
+      provider.addScope("email");
+      firebase
+        .auth()
+        .signInWithPopup(provider)
+        .then(function (result) {
+          console.log("Logging sucessfully", result.user);
+          location.href = "home.html";
+        })
+        .catch(function (error) {
+          console.log("Logging fail", error);
+        });
     });
 
-    document.getElementById('sign-in-2').addEventListener('click', function () {
+  document.getElementById("sign-in-2").addEventListener("click", function () {
+    let emailTxt = document.getElementById("email").value;
+    let passtxt = document.getElementById("password").value;
 
-        let emailTxt = document.getElementById('email').value;
-        let passtxt = document.getElementById('password').value;
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(emailTxt, passtxt)
+      .then((userCredential) => {
+        // Signed in
+        let user = userCredential.user;
+        // ...
+        console.log("Logging sucessfully");
+        alert("Logging sucessfully");
+        location.href = "home.html";
+      })
+      .catch((error) => {
+        let errorCode = error.code;
+        let errorMessage = error.message;
+        alert("Logging fail");
+        console.log("Logging fail", errorMessage);
+      });
+  });
 
-        firebase.auth().signInWithEmailAndPassword(emailTxt, passtxt)
-            .then((userCredential) => {
-                // Signed in
-                let user = userCredential.user;
-                // ...
-                console.log('Logging sucessfully');
-                alert('Logging sucessfully');
-                location.href = 'home.html';
-            })
-            .catch((error) => {
-                let errorCode = error.code;
-                let errorMessage = error.message;
-                alert('Logging fail');
-                console.log('Logging fail', errorMessage);
-            });
 
+  const validatePhone = () => {
+  const phoneNumber = this.document.getElementById("phone").value;
+  const appVerifier = window.recaptchaVerifier;
+  firebase
+    .auth()
+    .signInWithPhoneNumber(phoneNumber, appVerifier)
+    .then((confirmationResult) => {
+      window.confirmationResult = confirmationResult;
+      window.location.href = DASHBOARD;
+    })
+    .catch((error) => {
+      console.log({ error });
+      grecaptcha.reset(window.recaptchaWidgetId);
+      window.recaptchaVerifier.render().then(function (widgetId) {
+        grecaptcha.reset(widgetId);
+      });
     });
+};
+
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('verify-code', {
+  'size': 'invisible',
+  'callback': (response) => {
+    onSignInSubmit();
+  }
+});
+  
 });

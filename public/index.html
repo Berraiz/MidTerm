@@ -39,10 +39,19 @@
             <div class="row">
                 <div class="col-lg-12">
                     <a id="sign-in-button" class="btn bg-googleplay mt-4 text-white w-100" href="#">Google</a>
-                </div>
+                </div><br><br>
+                    <div>
+                        
+                        <input type="text" id="phone-number" placeholder="Phone Number">
+                        <button id="send-verification-code">Send Verification Code</button>
+                    
+                        <input type="text" id="verification-code" placeholder="Verification Code" style="display: none;">
+                        <button id="verify-code" style="display: none;">Verify Code</button>
+                    </div>
             </div>
         </div>
     </div>
+    <div  id="recaptcha"></div>
 </body>
 
 </html>
